@@ -1,1 +1,3 @@
 # BytedanceHomework5
+get方式是通过在url写入参数以传递数据的
+post方式是通过urlconnection的输出流直接向服务器传递数据的
