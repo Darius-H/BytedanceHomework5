@@ -30,7 +30,10 @@ import com.bytedance.androidcamp.network.dou.util.ResourceUtils;
 import com.bytedance.androidcamp.network.lib.util.ImageHelper;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -239,19 +242,34 @@ public class MainActivity extends AppCompatActivity {
                     //@TODO  5服务端没有做去重，拿到列表后，可以在端侧根据自己的id，做列表筛选。
                     if(videoswitch.isChecked())
                     {
+                        Set<String> videoset=new HashSet<String>();
                         mVideos.clear();
                         int size=response.body().videos.size();
                         for(int i=0;i<size;i++)
                         {
                             if(response.body().videos.get(i).studentId.equals(customid))
                             {
-                                mVideos.add(response.body().videos.get(i));
+                                if(!videoset.contains(response.body().videos.get(i).videoUrl))//去重，一个用户应该能传多个视频，根据studentid去重不合适
+                                {
+                                    mVideos.add(response.body().videos.get(i));
+                                    videoset.add(response.body().videos.get(i).videoUrl);
+                                }
                             }
                         }
                     }
                     else
                     {
-                        mVideos = response.body().videos;
+                        Set<String> videoset=new HashSet<String>();
+                        mVideos.clear();
+                        int size=response.body().videos.size();
+                        for(int i=0;i<size;i++)
+                        {
+                            if(!videoset.contains(response.body().videos.get(i).videoUrl))//去重
+                            {
+                                mVideos.add(response.body().videos.get(i));
+                                videoset.add(response.body().videos.get(i).videoUrl);
+                            }
+                        }
                     }
                     mRv.getAdapter().notifyDataSetChanged();//通知所有注册的观察者数据集已更改
                 }
